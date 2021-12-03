@@ -101,20 +101,21 @@ const getAllProperties = (options, limit = 10) => {
   SELECT properties.*, avg(property_reviews.rating) as average_rating
   FROM properties
   JOIN property_reviews ON properties.id = property_id
+  WHERE 1 = 1
   `;
 
   //if the city option parameter has entered
   if (options.city) {
     const hasWhereOrAnd = queryParams.length > 0;
     queryParams.push(`%${options.city}%`);
-    queryString += `${ hasWhereOrAnd ? ' AND ' : ' WHERE '}  city LIKE $${queryParams.length}`;
+    queryString += `AND city LIKE $${queryParams.length}`;
   }
 
   //owner logged in
   if (options.owner_id) {
     const hasWhereOrAnd = queryParams.length > 0;
     queryParams.push(options.owner_id);
-    queryString += `${hasWhereOrAnd ? ' AND ' : ' WHERE '} owner_id = $${queryParams.length}`;
+    queryString += `AND owner_id = $${queryParams.length}`;
   }
 
   // nights
@@ -122,19 +123,19 @@ const getAllProperties = (options, limit = 10) => {
   if (options.minimum_price_per_night) {
     const hasWhereOrAnd = queryParams.length > 0;
     queryParams.push(options.minimum_price_per_night);
-    queryString += ` ${hasWhereOrAnd ? ' AND ' : ' WHERE '} cost_per_night > $${queryParams.length}`;
+    queryString += `AND cost_per_night > $${queryParams.length}`;
   }
 
   if (options.maximum_price_per_night) {
     const hasWhereOrAnd = queryParams.length > 0;
     queryParams.push(options.maximum_price_per_night);
-    queryString += `${hasWhereOrAnd ? ' AND ' : ' WHERE '} cost_per_night < $${queryParams.length}`;
+    queryString += `AND cost_per_night < $${queryParams.length}`;
   }
 
   if (options.minimum_rating) {
     const hasWhereOrAnd = queryParams.length > 0;
     queryParams.push(options.minimum_rating);
-    queryString += `${hasWhereOrAnd ? ' AND ' : ' WHERE '} rating > $${queryParams.length}`;
+    queryString += `AND rating > $${queryParams.length}`;
   }
 
   // other WHERE queries
@@ -161,7 +162,6 @@ exports.getAllProperties = getAllProperties;
  */
 const addProperty = function(property) {
   const queryParams = [];
-  // To add to query string: $1, $2, $3...
   const queryParamsNums = [];
   let numOfKeys = 1;
   for (const key in property) {
